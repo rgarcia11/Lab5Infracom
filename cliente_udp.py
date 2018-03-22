@@ -33,7 +33,7 @@ class ObjetoEnviar():
 	def darTotalObjetos(self):
 		return self.totalArchivos
 
-objetos	= 1
+objetos	= 10
 i = 0
 while i < objetos:
 	objeto = ObjetoEnviar(i, time.time(), objetos)
