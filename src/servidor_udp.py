@@ -6,14 +6,18 @@ import socket
 import pickle
 import time
 import threading
-
+import os
 #datos
-IP = '127.0.0.1'
-PORT = 5010
+#IP = '127.0.0.1'
+#PORT = 5010
+IP = input('Inserte la IP a donde desea conectar la aplicacion: ')
+PORT = int(input('Inserte el puerto en el que desea escuchar conexiones: '))
 dir_servidor = (IP, PORT)
 socketServidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 socketServidor.bind(dir_servidor)
 TAM_BUFFER = 1024
+dir_src = os.getcwd()
+dir_data = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"data")
 
 class ObjetoEnviar():
 	"""
@@ -46,16 +50,16 @@ def recibirObjetos():
 		
 		
 		data = pickle.loads(data)
-		print(data)
-		print(data.darSecuencia(), data.darMarcaTiempo())		
+		#print(data.darSecuencia(), data.darMarcaTiempo())		
 
 		#tiempo actual - tiempo de envio = tiempo en segundos de la transferencia, *1000 para ms
 		tiempo= (time.time()-data.darMarcaTiempo())*1000
 		nombretxt = str(ip) + ".txt"
-		
+		os.chdir(dir_data)
 		file = open(nombretxt,"a") 
-		file.write(str(data.darSecuencia()) +": "+ str(tiempo)+"\n") 
+		file.write(str(data.darSecuencia()) +": "+ str(tiempo)+" ms \n") 
 		file.close() 
+		os.chdir(dir_src)
 		
 		with lock:
 			if ip in tiempos:
@@ -81,15 +85,12 @@ thread_recibirObjetos.start()
 
 while True:
 	time.sleep(2)
-	print('While True:{}'.format(tiempos))
+	print('Clientes enviando:{}'.format(tiempos))
 	tiempo_comparacion = time.time()
 	with lock:
-		print('With lock')
 		for ip in list(tiempos):
 			tiempo_comparacion = abs(tiempo_comparacion - tiempos[ip][0])
-			print('for ip in tiempos.keys(), diferencia: {}'.format(tiempo_comparacion))
 			if tiempo_comparacion > 5:
-				print('if tiempos - bla > 5')
 				#Timeout del cliente  con ip
 				#Se deben imprimir las estadisticas en el archivo:
 				num_recibidos = tiempos[ip][1]
@@ -97,11 +98,12 @@ while True:
 				num_perdidos = num_esperados - num_recibidos
 				nombretxt = str(ip) + ".txt"
 				promedio = (tiempos[ip][3])/num_esperados
+				os.chdir(dir_data)
 				file = open(nombretxt,"a")
 				file.write('Archivo terminado. Recibidos: {}. Total esperados: {}. Perdidos: {}. Promedio tiempo envio: {}\n'.format(num_recibidos, num_esperados, num_perdidos, promedio))
 				file.close()
+				os.chdir(dir_src)
 				del tiempos[ip]
-				print('imprimido y eliminado de la tuplita')
 			
 ##Revisar los tiempos del arreglo tiempos
 

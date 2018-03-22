@@ -6,8 +6,10 @@ import socket
 import time
 import pickle
 #Datos importantes
-IP = "127.0.0.1"
-PORT = 5010
+#IP = "127.0.0.1"
+IP = input('Inserte la IP a la que desea conectarse: ')
+#PORT = 5010
+PORT = int(input('Inserte el puerto al que desea conectarse'))
 servidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dir_servidor = (IP, PORT)
 
