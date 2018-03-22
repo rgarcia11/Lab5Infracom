@@ -6,6 +6,7 @@ import socket
 import pickle
 import time
 import threading
+
 #datos
 IP = '127.0.0.1'
 PORT = 5010
@@ -58,12 +59,20 @@ def recibirObjetos():
 		
 		with lock:
 			if ip in tiempos:
-				tiempos[ip] = tiempo_recepcion, tiempos[ip][1]+1, tiempos[ip][2]
+				tiempos[ip] = tiempo_recepcion, tiempos[ip][1]+1, tiempos[ip][2], tiempos[ip][3]+tiempo
 			else:
-				tiempos[ip] = tiempo_recepcion, 1, data.darTotalObjetos()
+				tiempos[ip] = tiempo_recepcion, 1, data.darTotalObjetos(), tiempo
 		
 
+"""
+tiempos[ip][data]
+	ip[###]: la ip del cliente que envio el mensaje
+	data[0]: timestamp en el que se recibio el paquete
+	data[1]: contador de objetos recibidos hasta el momento
+	data[2]: total de objetos a mandar por parte del cliente
+"""
 tiempos = {}
+
 lock = threading.RLock()
 thread_recibirObjetos = threading.Thread(
 	target = recibirObjetos
@@ -87,8 +96,9 @@ while True:
 				num_esperados = tiempos[ip][2]
 				num_perdidos = num_esperados - num_recibidos
 				nombretxt = str(ip) + ".txt"
+				promedio = (tiempos[ip][3])/num_esperados
 				file = open(nombretxt,"a")
-				file.write('Archivo terminado. Recibidos: {}. Total esperados: {}. Perdidos: {}\n'.format(num_recibidos, num_esperados, num_perdidos))
+				file.write('Archivo terminado. Recibidos: {}. Total esperados: {}. Perdidos: {}. Promedio tiempo envio: {}\n'.format(num_recibidos, num_esperados, num_perdidos, promedio))
 				file.close()
 				del tiempos[ip]
 				print('imprimido y eliminado de la tuplita')
