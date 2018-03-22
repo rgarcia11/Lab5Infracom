@@ -1,8 +1,11 @@
 """
+servidor
 """
 #imports
 import socket
 import pickle
+import time
+
 #datos
 IP = '127.0.0.1'
 PORT = 5010
@@ -39,5 +42,16 @@ while True:
 	data = pickle.loads(data)
 	print(data)
 	print(data.darSecuencia(), data.darMarcaTiempo(), cont)
+	
+	ip = addr[0]
+	port = addr[1]
+	
+	#tiempo actual - tiempo de envio = tiempo en segundos de la transferencia, *1000 para ms
+	tiempo= (time.time()-data.darMarcaTiempo())*1000
+	nombretxt = str(ip) + ".txt"
+	
+	file = open(nombretxt,"a") 
+	file.write(str(data.darSecuencia()) +": "+ str(tiempo)+"\n") 
+	file.close() 
 	
 #C:\Users\ale_e\Desktop\Alejandro\UNIVERSIDAD ANDES\6to Semestre (Local)\Infraestructura de Comunicaciones\Lab5\Lab5Infracom
