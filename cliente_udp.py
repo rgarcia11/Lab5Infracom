@@ -15,26 +15,28 @@ class ObjetoEnviar():
 	"""
 	Esta clase hace un objeto...
 	"""
-	def __init__(self, numSecuencia0, marcaTiempo0):
+	def __init__(self, numSecuencia0, marcaTiempo0, totalArchivos0):
 		"""
 		Este metodo nanan
 		"""
 		#este el numero de la secuencia
 		self.numSecuencia = numSecuencia0
 		self.marcaTiempo = marcaTiempo0
-		
+		self.totalArchivos = totalArchivos0
 		
 	def darSecuencia(self):
 		return self.numSecuencia
 		
 	def darMarcaTiempo(self):
 		return self.marcaTiempo
-
+	
+	def darTotalObjetos(self):
+		return self.totalArchivos
 
 objetos	= 1
 i = 0
 while i < objetos:
-	objeto = ObjetoEnviar(i, time.time())
+	objeto = ObjetoEnviar(i, time.time(), objetos)
 	print('Objeto original  . sec: {}, marca: {}'.format(objeto.darSecuencia(), objeto.darMarcaTiempo()))
 	objectoB = pickle.dumps(objeto)
 	objetoR = pickle.loads(objectoB)
