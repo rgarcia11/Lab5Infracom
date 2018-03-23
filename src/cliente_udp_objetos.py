@@ -1,55 +1,33 @@
 """
-cliente
+Cliente UDP
+
+Envia objetos al servidor UDP que se especifica por consola.
 """
-#Imports
+
 import socket
 import time
 import pickle
-#Datos importantes
-#IP = "127.0.0.1"
+from ObjetoEnviar import *
+
+#Definicion de ip y puerto del servidor, socket para establecer comunicacion y direccion del servidor.
 IP = input('Inserte la IP a la que desea conectarse: ')
-#PORT = 5010
 PORT = int(input('Inserte el puerto al que desea conectarse'))
+objetos = int(input('Inserte numero de objetos a enviar.'))
 servidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dir_servidor = (IP, PORT)
 
-class ObjetoEnviar():
+def enviarObjetos(objetos):
 	"""
-	Esta clase hace un objeto...
+	Envia al servidor el numero de objetos que entra por parametro.
+	args:
+		objetos: numero de objetos a enviar.
 	"""
-	def __init__(self, numSecuencia0, marcaTiempo0, totalArchivos0):
-		"""
-		Este metodo nanan
-		"""
-		#este el numero de la secuencia
-		self.numSecuencia = numSecuencia0
-		self.marcaTiempo = marcaTiempo0
-		self.totalArchivos = totalArchivos0
-		
-	def darSecuencia(self):
-		return self.numSecuencia
-		
-	def darMarcaTiempo(self):
-		return self.marcaTiempo
+	i = 0
+	while i < objetos:
+		objeto = ObjetoEnviar(i, time.time(), objetos)
+		print('Objeto original  . sec: {}, marca: {}'.format(objeto.darSecuencia(), objeto.darMarcaTiempo()))
+		servidor.sendto(pickle.dumps(objeto), dir_servidor)
+		i = i+1
 	
-	def darTotalObjetos(self):
-		return self.totalArchivos
-
-objetos	= 10
-i = 0
-while i < objetos:
-	objeto = ObjetoEnviar(i, time.time(), objetos)
-	print('Objeto original  . sec: {}, marca: {}'.format(objeto.darSecuencia(), objeto.darMarcaTiempo()))
-	objectoB = pickle.dumps(objeto)
-	objetoR = pickle.loads(objectoB)
-	print('Objeto recuperado. sec: {}, marca: {}'.format(objetoR.darSecuencia(), objetoR.darMarcaTiempo()))
-	#servidor.sendto(file,dir_servidor)
-	servidor.sendto(pickle.dumps(objeto), dir_servidor)
-	i = i+1
-
-
-
-
-
-
-
+if __name__ == "__main__":
+	enviarObjetos(objetos)
