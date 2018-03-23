@@ -1,8 +1,8 @@
 """
 Servidor UDP.
 
-Recibe objetos por un datagrama (UDP).
-Imprime información asociada a dichos objetos en un archivo de texto en .data/
+Envia archivos por un datagrama (UDP).
+
 """
 
 import socket
