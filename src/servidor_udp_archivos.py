@@ -21,6 +21,7 @@ socketServidor.bind(dir_servidor)
 TAM_BUFFER = 1024
 dir_src = os.getcwd()
 dir_data = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"data")
+dir_archivos = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"archivos")
 
 """
 Aclaraciones de convencion sobre el diccionario que contiene la
@@ -35,33 +36,24 @@ tiempos[ip][data]
 """
 tiempos = {}
 
-def recibirObjetos():
+def enviarObjetos():
 	"""
-	Recibe objetos. Esta funcion bloquea el thread que la corra
-	porque contiene un while True:
+	Envia objetos.
 	"""
-	while True:
-		data, addr = socketServidor.recvfrom(TAM_BUFFER)
-		tiempo_recepcion = time.time()
-		ip = addr[0]
-		port = addr[1]
-		
-		data = pickle.loads(data)	
+	data, addr = socketServidor.recvfrom(TAM_BUFFER)
+	nombre_archivo = data.strip()
+	dir_cliente = addr
+	os.chdir(dir_archivos)
+	f=open(nombre_archivo, 'rb')
+	data = f.read(TAM_BUFFER)
+	socketCliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	while data:
+		if socketCliente.sendto(data,addr):
+			print('Se esta enviando 1 pedacito')
+			data = f.read(TAM_BUFFER)
+	socketCliente.close()
+	f.close()
 
-		tiempo= (time.time()-data.darMarcaTiempo())*1000
-		nombretxt = str(ip) + ".txt"
-		os.chdir(dir_data)
-		file = open(nombretxt,"a") 
-		file.write(str(data.darSecuencia()) +": "+ str(tiempo)+" ms \n") 
-		file.close() 
-		os.chdir(dir_src)
-		
-		with lock:
-			if ip in tiempos:
-				tiempos[ip] = tiempo_recepcion, tiempos[ip][1]+1, tiempos[ip][2], tiempos[ip][3]+tiempo
-			else:
-				tiempos[ip] = tiempo_recepcion, 1, data.darTotalObjetos(), tiempo
-		
 
 def verificarTimeout():
 	"""
@@ -89,15 +81,14 @@ def verificarTimeout():
 					file.close()
 					os.chdir(dir_src)
 					del tiempos[ip]
-	
+
 
 
 
 if __name__ == "__main__":
 	lock = threading.RLock()
-	thread_recibirObjetos = threading.Thread(
-		target = recibirObjetos
+	thread_enviarObjetos = threading.Thread(
+		target = enviarObjetos
 	)
-	thread_recibirObjetos.start()
-	verificarTimeout()
-
+	thread_enviarObjetos.start()
+	#verificarTimeout()
