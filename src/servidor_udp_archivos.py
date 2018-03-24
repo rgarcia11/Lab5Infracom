@@ -10,30 +10,27 @@ import pickle
 import time
 import threading
 import os
+import hashlib
 from ObjetoEnviar import *
 
 #Ip, puerto, inicializacion de socket, tamanho del buffer y direccion de carpetas
-IP = input('Inserte la IP a donde desea conectar la aplicacion (local - 127.0.0.1, remoto - 0.0.0.0): ')
-PORT = int(input('Inserte el puerto en el que desea escuchar conexiones: '))
+
+IP = "127.0.0.1" 
+#input('Inserte la IP a donde desea conectar la aplicacion (local - 127.0.0.1, remoto - 0.0.0.0): ')
+
+PORT = 8081
+#int(input('Inserte el puerto en el que desea escuchar conexiones: '))
+
 dir_servidor = (IP, PORT)
 socketServidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 socketServidor.bind(dir_servidor)
-TAM_BUFFER = 1024
+TAM_BUFFER = 4096
+TAM_MSG = 1024
 dir_src = os.getcwd()
 dir_data = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"data")
 dir_archivos = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"archivos")
 
-"""
-Aclaraciones de convencion sobre el diccionario que contiene la
-informacion sobre objetos recibidos de un cliente (ip).
-Este diccionario es la comunicacion entre los dos threads que
-componen al servidor.
-tiempos[ip][data]
-	ip[###]: la ip del cliente que envio el mensaje
-	data[0]: timestamp en el que se recibio el paquete
-	data[1]: contador de objetos recibidos hasta el momento
-	data[2]: total de objetos a mandar por parte del cliente
-"""
+
 tiempos = {}
 
 def enviarObjetos():
@@ -44,22 +41,33 @@ def enviarObjetos():
 		addr: la direccion (ip y puerto) del cliente.
 			Se utilizara addr para responderle a ese cliente.
 	"""
+	
+	#recibe el nombre del archivo
 	data, addr = socketServidor.recvfrom(TAM_BUFFER)
 	nombre_archivo = data.strip()
+	
+	#dir, ip y puerto
 	dir_cliente = addr
+	
 	os.chdir(dir_archivos)
 	f=open(nombre_archivo, 'rb')
-	data = f.read(TAM_BUFFER)
 	socketCliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	
 	while data:
-		if socketCliente.sendto(data,addr):
+		#dataEnv contiene en [0] el mensaje y en [1] el mensaje hasheado
+		dataEnv = []
+		dataEnv.append(f.read(TAM_MSG))
+		hash_object = hashlib.md5(dataEnv[0])
+		dataEnv.append(hash_object.hexdigest())
+		print(str(dataEnv[1]))
+		if socketCliente.sensdto(pickle.dumps(dataEnv),addr):
 			print('Se esta enviando 1 pedacito')
 			try:
 				socketServidor.settimeout(3)
 				resp, addr = socketServidor.recvfrom(TAM_BUFFER)
 				if resp == b'ACK':
 					data = f.read(TAM_BUFFER)
-			except:
+			except Exception:
 				pass
 
 	socketCliente.close()
