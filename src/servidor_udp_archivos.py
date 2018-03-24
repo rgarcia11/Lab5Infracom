@@ -14,12 +14,10 @@ import hashlib
 from ObjetoEnviar import *
 
 #Ip, puerto, inicializacion de socket, tamanho del buffer y direccion de carpetas
-
-IP = "127.0.0.1"
-#input('Inserte la IP a donde desea conectar la aplicacion (local - 127.0.0.1, remoto - 0.0.0.0): ')
-
-PORT = 8081
-#int(input('Inserte el puerto en el que desea escuchar conexiones: '))
+#IP = "127.0.0.1"
+IP = input('Inserte la IP a donde desea conectar la aplicacion (local - 127.0.0.1, remoto - 0.0.0.0): ')
+#PORT = 8081
+PORT = int(input('Inserte el puerto en el que desea escuchar conexiones: '))
 
 #Params iniciales
 dir_servidor = (IP, PORT)

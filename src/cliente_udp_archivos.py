@@ -14,14 +14,13 @@ from ObjetoEnviar import *
 
 #Definicion de ip y puerto del servidor, socket para establecer comunicacion y direccion del servidor.
 
-IP = "127.0.0.1" 
-#input('Inserte la IP a la que desea conectarse: ')
+#IP = "127.0.0.1"
+IP = input('Inserte la IP a la que desea conectarse (Azure: 52.234.215.61): ')
 
-PORT = 8081
-#int(input('Inserte el puerto al que desea conectarse'))"""
+#PORT = 8081
+PORT = int(input('Inserte el puerto al que desea conectarse'))
 
-nombre_archivo = "test.pdf"
-#input('Inserte nombre del archivo a pedir.')"""
+nombre_archivo = input('Inserte nombre del archivo a pedir.')
 
 servidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dir_servidor = (IP, PORT)
@@ -41,13 +40,13 @@ def pedirArchivo(nombre_archivo):
 	args:
 		nombre_archivo: nombre del archivo a pedir
 	"""
-	
+
 	#crea el archivo vacio donde se va a escribir lo que se recibe del servidor
 	f = open(nombre_archivo, 'wb')
-	
+
 	#envia al servidor nombre del archivo a descargar
 	servidor.sendto(nombre_archivo.encode(), dir_servidor)
-	
+
 	try:
 		contador = 0
 		while True:
@@ -72,8 +71,8 @@ def pedirArchivo(nombre_archivo):
 		f.close()
 		servidor.close()
 		print('Termino de transferir')
-	
-	
+
+
 	"""
 	fallo = 0
 	try:
