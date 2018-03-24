@@ -54,7 +54,14 @@ def enviarObjetos():
 	while data:
 		if socketCliente.sendto(data,addr):
 			print('Se esta enviando 1 pedacito')
-			data = f.read(TAM_BUFFER)
+			try:
+				socketServidor.settimeout(3)
+				resp, addr = socketServidor.recvfrom(TAM_BUFFER)
+				if resp == b'ACK':
+					data = f.read(TAM_BUFFER)
+			except:
+				pass
+
 	socketCliente.close()
 	f.close()
 

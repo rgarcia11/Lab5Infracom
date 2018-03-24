@@ -17,6 +17,8 @@ nombre_archivo = input('Inserte nombre del archivo a pedir.')
 servidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dir_servidor = (IP, PORT)
 TAM_BUFFER = 1024
+ACK = 'ACK'
+NAC = 'NAC'
 def pedirArchivo(nombre_archivo):
 	"""
 	Pide un archivo al servidor.
@@ -32,16 +34,26 @@ def pedirArchivo(nombre_archivo):
 	"""
 	f = open(nombre_archivo, 'wb')
 	servidor.sendto(nombre_archivo.encode(), dir_servidor)
-	data,addr = servidor.recvfrom(TAM_BUFFER)
+	fallo = 0
 	try:
-		while data:
-			f.write(data)
-			servidor.settimeout(3)
-			data,addr = servidor.recvfrom(TAM_BUFFER)
+		servidor.settimeout(5)
+		data,addr = servidor.recvfrom(TAM_BUFFER)
+		servidor.sendto(ACK.encode(), dir_servidor)
 	except:
-		f.close()
-		servidor.close()
-		print('Termino de transferir')
+		fallo = 1
+		print('El servidor no respondio.')
+
+	if not fallo:
+		try:
+			while data:
+				f.write(data)
+				servidor.settimeout(3)
+				data,addr = servidor.recvfrom(TAM_BUFFER)
+				servidor.sendto(ACK.encode(), dir_servidor)
+		except:
+			f.close()
+			servidor.close()
+			print('Termino de transferir')
 
 if __name__ == "__main__":
 	pedirArchivo(nombre_archivo)
