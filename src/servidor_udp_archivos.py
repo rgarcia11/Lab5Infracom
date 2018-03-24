@@ -15,7 +15,7 @@ from ObjetoEnviar import *
 
 #Ip, puerto, inicializacion de socket, tamanho del buffer y direccion de carpetas
 
-IP = "127.0.0.1" 
+IP = "127.0.0.1"
 #input('Inserte la IP a donde desea conectar la aplicacion (local - 127.0.0.1, remoto - 0.0.0.0): ')
 
 PORT = 8081
@@ -42,21 +42,21 @@ def enviarObjetos():
 		addr: la direccion (ip y puerto) del cliente.
 			Se utilizara addr para responderle a ese cliente.
 	"""
-	
+
 	#recibe el nombre del archivo y lo pasa devuelta a string
 	data, addr = socketServidor.recvfrom(TAM_BUFFER)
 	nombre_archivob = data.strip()
 	nombre_archivo = nombre_archivob.decode()
-	
+
 	print(nombre_archivo)
 
 	#dir, ip y puerto
 	dir_cliente = addr
-	
+
 	os.chdir(dir_archivos)
 	f=open(nombre_archivo, 'rb')
 	socketCliente = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	
+
 	#  -- algunas variables ---
 	condicionG = True # dice si acabo de enviar
 	contador = 0 # cuenta la cantidad de paquetes enviados con respuesta de que llegaron bien
@@ -65,9 +65,10 @@ def enviarObjetos():
 	#  -------
 
 	while condicionG: # si no hay nada que enviar termina
-		if leerNuevo: 
-			# solo se cambian los datos a enviar 
-			dataEnv.append(f.read(TAM_MSG)) #Guarda la porcion del archivo (datos) a mandar en el paquete 
+		if leerNuevo:
+			# solo se cambian los datos a enviar
+			dataEnv[:]=[]
+			dataEnv.append(f.read(TAM_MSG)) #Guarda la porcion del archivo (datos) a mandar en el paquete
 			if dataEnv[0]:
 				#Guarda el hash del mensaje para verificacion de integridad
 				hash_object = hashlib.md5(dataEnv[0])
@@ -75,7 +76,7 @@ def enviarObjetos():
 				print("data:"+ str(dataEnv[0]) + " hash: " + dataEnv[1])
 			else:
 				condicionG = False
-		if condicionG: 
+		if condicionG:
 			#envia dataEnv con pickle al addr(puerto & ip)
 			socketCliente.sendto(pickle.dumps(dataEnv), addr)
 			print('Se envio 1 paquete')
@@ -101,6 +102,6 @@ if __name__ == "__main__":
 		target = enviarObjetos
 	)
 	thread_enviarObjetos.start()
-	
-	
+
+
 #C:\Users\ale_e\Desktop\Alejandro\UNIVERSIDAD ANDES\6to Semestre (Local)\Infraestructura de Comunicaciones\Lab5\Lab5Infracom\src
