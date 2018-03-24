@@ -60,7 +60,7 @@ def enviarObjetos():
 		hash_object = hashlib.md5(dataEnv[0])
 		dataEnv.append(hash_object.hexdigest())
 		print(str(dataEnv[1]))
-		if socketCliente.sensdto(pickle.dumps(dataEnv),addr):
+		if socketCliente.sendto(pickle.dumps(dataEnv),addr):
 			print('Se esta enviando 1 pedacito')
 			try:
 				socketServidor.settimeout(3)
