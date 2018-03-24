@@ -39,6 +39,10 @@ tiempos = {}
 def enviarObjetos():
 	"""
 	Envia objetos.
+	1--Se recibe un mensaje del cliente que contiene:
+		data: el nombre del archivo
+		addr: la direccion (ip y puerto) del cliente.
+			Se utilizara addr para responderle a ese cliente.
 	"""
 	data, addr = socketServidor.recvfrom(TAM_BUFFER)
 	nombre_archivo = data.strip()

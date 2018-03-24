@@ -19,7 +19,14 @@ dir_servidor = (IP, PORT)
 TAM_BUFFER = 1024
 def pedirArchivo(nombre_archivo):
 	"""
-	Pide un archivo al servidor
+	Pide un archivo al servidor.
+	1--Envia un mensaje al servidor con el archivo a pedir.
+	2--Recibe archivos en un while.
+	 --La condicion del while es que no se reciba nulo.
+	3--La condicion real de salida es el timeout del socket
+	 --Se establece un timeout de 3 segundos al socket
+	4--Cuando se cumple el timeout (se captura la excepcion)
+	   y se termina de transferir.
 	args:
 		nombre_archivo: nombre del archivo a pedir
 	"""
