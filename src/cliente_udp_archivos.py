@@ -18,15 +18,17 @@ from ObjetoEnviar import *
 IP = input('Inserte la IP a la que desea conectarse (Azure: 52.234.215.61): ')
 
 #PORT = 8081
-PORT = int(input('Inserte el puerto al que desea conectarse'))
 
-nombre_archivo = input('Inserte nombre del archivo a pedir.')
+PORT = int(input('Inserte el puerto al que desea conectarse: '))
+
+nombre_archivo = input('Inserte nombre del archivo a pedir: ')
 
 servidor = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 dir_servidor = (IP, PORT)
 TAM_BUFFER = 1048576
 ACK = 'ACK'
 NAC = 'NAC'
+tiempo = 0
 def pedirArchivo(nombre_archivo):
 	"""
 	Pide un archivo al servidor.
@@ -47,6 +49,8 @@ def pedirArchivo(nombre_archivo):
 	#envia al servidor nombre del archivo a descargar
 	servidor.sendto(nombre_archivo.encode(), dir_servidor)
 
+	tiempo = time.time()
+
 	try:
 		contador = 0
 		while True:
@@ -64,13 +68,15 @@ def pedirArchivo(nombre_archivo):
 				servidor.sendto(NAC.encode(), dir_servidor)
 				print("llego corrupto el paquete: " + str(contador) )
 	except Exception as inst:
-		print(type(inst))
-		print(inst.args)
-		print(inst)
-		print("fin de descripcion de la excepcion")
+		#print(type(inst))
+		#print(inst.args)
+		#print(inst)
+		#print("fin de descripcion de la excepcion")
+		tiempo = time.time() - tiempo
+		print('Termino de transferir')
+		print("tiempo de transferencia: " + str(tiempo-5) + "segundos")
 		f.close()
 		servidor.close()
-		print('Termino de transferir')
 
 
 	"""
