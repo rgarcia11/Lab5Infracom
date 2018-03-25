@@ -1,17 +1,21 @@
 import socket
 import threading
+import os
 import os.path
 import time
 
 ##########################################################
 # Datos importantes
 ##########################################################
-#bind_ip = '0.0.0.0'
-bind_ip = '127.0.0.1'
+bind_ip = '0.0.0.0'
+#bind_ip = '127.0.0.1'
 bind_port = 50005
 TAM_BUFFER = 1024
 MAX_THREADS = 100
 threads = []
+dir_src = os.getcwd()
+dir_data = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"data")
+dir_archivos = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"archivos")
 # Se crea el socket de espera y se conecta el servidor
 servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 servidor.bind((bind_ip, bind_port))
@@ -27,6 +31,7 @@ print ('Escuchando en (ip:puerto){}:{}'.format(bind_ip, bind_port))
 ##### el cliente entra por parametro
 def manejador_conexion(socket__conexion_servidor_cliente, nombre_cliente, puerto_cliente):
     #se envia la lista de archivos primero (sin los archivos de python!)
+    os.chdir(dir_archivos)
     lista_archivos = [a for a in os.listdir() if os.path.isfile(a)]
     #esta linea envia un string. Toca codificarlo a un stream de bytes.
     socket__conexion_servidor_cliente.sendto(str(lista_archivos).encode(), (nombre_cliente, puerto_cliente))
@@ -46,6 +51,7 @@ def manejador_conexion(socket__conexion_servidor_cliente, nombre_cliente, puerto
     print('El archivo pedido {} tiene tamanho {}'.format(peticion,tam_archivo))
     socket__conexion_servidor_cliente.sendto(str(tam_archivo).encode(), (nombre_cliente, puerto_cliente))
     #se abre el archivo que se quiere enviar, se lee en pedazos de tamanho TAM_BUFFER
+    tiempo_inicial = time.time()
     with open(peticion, 'rb') as f:
         archivo_enviar = f.read(TAM_BUFFER)
         #este while envia el archivo pedazo a pedazo hasta que ya no se lee mas.
@@ -53,10 +59,13 @@ def manejador_conexion(socket__conexion_servidor_cliente, nombre_cliente, puerto
             socket__conexion_servidor_cliente.send(archivo_enviar)
             archivo_enviar = f.read(TAM_BUFFER)
     #se cierra el socket para escritura para prevenir errores raros
+    tiempo_final = float(socket__conexion_servidor_cliente.recv(TAM_BUFFER).decode())
+    tiempo_transcurrido = tiempo_final - tiempo_inicial
+    socket__conexion_servidor_cliente.sendto(str(tiempo_transcurrido).encode(), (nombre_cliente, puerto_cliente))
     socket__conexion_servidor_cliente.shutdown(socket.SHUT_WR)
     #se cierra el socket ahora si
     socket__conexion_servidor_cliente.close()
-    print('Conexion cerrada con {}:{}'.format(nombre_cliente, puerto_cliente))
+    print('Conexion cerrada con {}:{}. Tiempo transcurrido: {}'.format(nombre_cliente, puerto_cliente, tiempo_transcurrido))
 
 #####Esta funcion es un thread para la recepcion de clientes.
 def manejador_clientes():

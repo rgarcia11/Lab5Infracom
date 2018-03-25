@@ -7,8 +7,8 @@ import time
 ############################################################
 print('comienzo')
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#nombre_servidor = '52.234.215.61'
-nombre_servidor = '127.0.0.1'
+nombre_servidor = '52.234.215.61'
+#nombre_servidor = '127.0.0.1'
 puerto_servidor = 50005
 TAM_BUFFER = 5120
 lista_archivos = []
@@ -93,10 +93,17 @@ def pedir_archivo():
                         archivo_recibir = archivo_recibir[:tam_archivo-tam_actual]
                     buff += archivo_recibir
                     tam_actual += len(archivo_recibir)
-                    print('chunk: {}'.format(archivo_recibir))
+                    #print('chunk: {}'.format(archivo_recibir))
                     f.write(archivo_recibir)
-            print('Archivo: {}'.format(archivo_recibir))
-            print('Termine de recibir')
+            tiempo_final = time.time()
+            cliente.sendto(str(tiempo_final).encode(),(nombre_servidor, puerto_servidor))
+            tiempo_transcurrido = str(cliente.recv(TAM_BUFFER).decode())
+            #print('Archivo: {}'.format(archivo_recibir))
+            tam_diferencia = tam_archivo - tam_actual
+            if tam_diferencia == 0:
+                print('Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}'.format(tiempo_transcurrido,tam_archivo, tam_actual))
+            else:
+                print('Recibido archivo inscompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}'.format(tiempo_transcurrido,tam_archivo, tam_actual))
             inicio_descarga = 0
             break
         else:
