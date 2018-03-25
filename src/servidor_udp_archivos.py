@@ -71,7 +71,7 @@ def enviarObjetos():
 				#Guarda el hash del mensaje para verificacion de integridad
 				hash_object = hashlib.md5(dataEnv[0])
 				dataEnv.append(hash_object.hexdigest())
-				print("data:"+ str(dataEnv[0]) + " hash: " + dataEnv[1])
+				#print("data:"+ str(dataEnv[0]) + " hash: " + dataEnv[1])
 			else:
 				condicionG = False
 		if condicionG:
@@ -84,10 +84,10 @@ def enviarObjetos():
 				if resp == b'ACK':
 					contador = contador + 1
 					leerNuevo = True
-					print('Se recibio respuesta ACK ! bien')
+					#print('Se recibio respuesta ACK ! bien')
 				else:
 					leerNuevo = False #El paquete le llego corrupto
-					print('Se recibio respuesta NAC')
+					#print('Se recibio respuesta NAC')
 			except Exception:
 				print('No se recibio ACK')
 				leerNuevo = False  #El paquete no llego, se perdio la respuesta o el cliente no esta conectado
