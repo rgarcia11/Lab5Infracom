@@ -50,7 +50,7 @@ def pedirArchivo(nombre_archivo):
 	try:
 		contador = 0
 		while True:
-			servidor.settimeout(3)
+			servidor.settimeout(5)
 			data,addr = servidor.recvfrom(TAM_BUFFER)
 			data = pickle.loads(data)
 			#print("data: "+ str(data[0]) + " hash: " + data[1])
