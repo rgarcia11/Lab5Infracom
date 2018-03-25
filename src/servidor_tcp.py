@@ -9,7 +9,7 @@ import time
 ##########################################################
 bind_ip = '0.0.0.0'
 #bind_ip = '127.0.0.1'
-bind_port = 50005
+bind_port = 5005
 TAM_BUFFER = 1024
 MAX_THREADS = 100
 threads = []

@@ -9,7 +9,7 @@ print('comienzo')
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 nombre_servidor = '52.234.215.61'
 #nombre_servidor = '127.0.0.1'
-puerto_servidor = 50005
+puerto_servidor = 5005
 TAM_BUFFER = 5120
 lista_archivos = []
 estado_conexion = 0
