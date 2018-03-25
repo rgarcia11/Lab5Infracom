@@ -79,14 +79,16 @@ def pedir_archivo():
             buff = b""
             print('Recibiendo:')
             inicio_descarga = 1
+            num_archivos = 0
             with open(mensaje, 'wb') as f:
                 while tam_actual < tam_archivo:
                     #print('Tamanho actual del archivo: {}'.format(tam_actual))
                     #print('Tamanho del archivo: {}'.format(tam_archivo))
                     progreso = tam_actual/tam_archivo*100
-                    print('Recibiendo... {0:.1f}%'.format(progreso))
+                    #print('Recibiendo... {0:.1f}%'.format(progreso))
 
                     archivo_recibir = cliente.recv(TAM_BUFFER)
+                    num_archivos+=1
                     if not archivo_recibir:
                         break
                     if len(archivo_recibir) + tam_actual > tam_archivo:
@@ -101,9 +103,9 @@ def pedir_archivo():
             #print('Archivo: {}'.format(archivo_recibir))
             tam_diferencia = tam_archivo - tam_actual
             if tam_diferencia == 0:
-                print('Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}'.format(tiempo_transcurrido,tam_archivo, tam_actual))
+                print('Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos))
             else:
-                print('Recibido archivo inscompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}'.format(tiempo_transcurrido,tam_archivo, tam_actual))
+                print('Recibido archivo inscompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos))
             inicio_descarga = 0
             break
         else:
