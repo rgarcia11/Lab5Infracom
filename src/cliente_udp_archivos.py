@@ -18,6 +18,7 @@ from ObjetoEnviar import *
 IP = input('Inserte la IP a la que desea conectarse (Azure: 52.234.215.61): ')
 
 #PORT = 8081
+
 PORT = int(input('Inserte el puerto al que desea conectarse: '))
 
 nombre_archivo = input('Inserte nombre del archivo a pedir: ')
@@ -47,6 +48,7 @@ def pedirArchivo(nombre_archivo):
 
 	#envia al servidor nombre del archivo a descargar
 	servidor.sendto(nombre_archivo.encode(), dir_servidor)
+
 	tiempo = time.time()
 
 	try:
@@ -75,7 +77,6 @@ def pedirArchivo(nombre_archivo):
 		print("tiempo de transferencia: " + str(tiempo-5) + "segundos")
 		f.close()
 		servidor.close()
-		
 
 
 	"""
