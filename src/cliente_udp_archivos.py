@@ -10,7 +10,7 @@ import time
 import pickle
 import hashlib
 from ObjetoEnviar import *
-
+import os
 
 #Definicion de ip y puerto del servidor, socket para establecer comunicacion y direccion del servidor.
 
@@ -29,6 +29,8 @@ TAM_BUFFER = 1048576
 ACK = 'ACK'
 NAC = 'NAC'
 tiempo = 0
+dir_src = os.getcwd()
+dir_descargas = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"descargas")
 def pedirArchivo(nombre_archivo):
 	"""
 	Pide un archivo al servidor.
@@ -44,6 +46,7 @@ def pedirArchivo(nombre_archivo):
 	"""
 
 	#crea el archivo vacio donde se va a escribir lo que se recibe del servidor
+	os.chdir(dir_descargas)
 	f = open(nombre_archivo, 'wb')
 
 	#envia al servidor nombre del archivo a descargar
