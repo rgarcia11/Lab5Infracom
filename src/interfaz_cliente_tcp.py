@@ -6,21 +6,21 @@ import math
 Interfaz del cliente para manejar las interacciones del usuario.
 """
 class Application(tk.Frame):
-	"""
-	Esta clase genera una interfaz
-	"""
+    """
+    Esta clase genera una interfaz
+    """
     def __init__(self, master=None):
-		"""
-		Constructor
-		"""
+        """
+        Constructor
+        """
         super().__init__(master)
         self.pack()
         self.create_widgets()
 
     def create_widgets(self):
-		"""
-		Crea todos los elementos de la ventana
-		"""
+        """
+        Crea todos los elementos de la ventana
+        """
         self.descargando = 0
         self.conexion = 0
 
@@ -64,36 +64,36 @@ class Application(tk.Frame):
         self.quit.grid(row=4, column=2)
 
     def conectar(self):
-		"""
-		Llama la funcion conectar del cliente. Inicia el estado de la conexion.
-		"""
+        """
+        Llama la funcion conectar del cliente. Inicia el estado de la conexion.
+        """
         conexion_con_servidor(self, self.txip.get(), int(self.txport.get()))
         self.mostrarConexion()
         thread_timeout=threading.Thread(target=self.timeoutCliente)
         thread_timeout.start()
 
     def actualizarLista(self, lista):
-		"""
-		Actualiza la lista de archivos.
-		"""
+        """
+        Actualiza la lista de archivos.
+        """
         self.lista = lista
         self.listBoxLista.delete(0,tk.END)
         for l in self.lista:
             self.listBoxLista.insert(tk.END, l[1:-1])
 
     def descargarArchivo(self):
-		"""
-		Llama la funcion descargar del cliente. Inicia el estado "descargando"
-		"""
+        """
+        Llama la funcion descargar del cliente. Inicia el estado "descargando"
+        """
         seleccionado = self.listBoxLista.get(self.listBoxLista.curselection())
         thread_archivo=threading.Thread(target=pedir_archivo, args=(self,seleccionado,))
         thread_archivo.start()
         self.detenerDescarga()
 
     def mostrarConexion(self):
-		"""
-		Cambia el estado de la conexion y lo muestra.
-		"""
+        """
+        Cambia el estado de la conexion y lo muestra.
+        """
         if self.conexion:
             self.conexion = 0
             self.sconexion.set("Desconectado")
@@ -102,21 +102,21 @@ class Application(tk.Frame):
             self.sconexion.set("Conectado")
 
     def estaConectado(self):
-		"""
-		Retorna el estado de la conexion.
-		"""
+        """
+        Retorna el estado de la conexion.
+        """
         return self.conexion
 
     def actualizarProgreso(self,progreso):
-		"""
-		Actualiza el porcentaje de progreso de la descarga.
-		"""
+        """
+        Actualiza el porcentaje de progreso de la descarga.
+        """
         self.s.set('Progreso: {}%'.format(math.ceil(progreso)))
 
     def detenerDescarga(self):
-		"""
-		Detiene la descarga cambiando el estado y mostrandolo.
-		"""
+        """
+        Detiene la descarga cambiando el estado y mostrandolo.
+        """
         if self.descargando:
             self.sdetener.set("Reanudar")
             self.descargando=0
@@ -125,15 +125,15 @@ class Application(tk.Frame):
             self.descargando=1
 
     def estaDescargando(self):
-		"""
-		Retorna si se esta descargando actualmente o no.
-		"""
+        """
+        Retorna si se esta descargando actualmente o no.
+        """
         return self.descargando
 
     def timeoutCliente(self):
-		"""
-		Calcula cuando se debe terminar la sesion.
-		"""
+        """
+        Calcula cuando se debe terminar la sesion.
+        """
         while 1:
             time.sleep(5)
             if not self.descargando:
@@ -142,9 +142,9 @@ class Application(tk.Frame):
                 return
 
 if __name__ == '__main__':
-	"""
-	Si se llama este metodo, se crea la interfaz con la clase Application y se inicia
-	"""
+    """
+    Si se llama este metodo, se crea la interfaz con la clase Application y se inicia
+    """
     root = tk.Tk()
     app = Application(master=root)
     app.mainloop()

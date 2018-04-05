@@ -17,9 +17,9 @@ dir_descargas = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"descargas")
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def conexion_con_servidor(interfaz, nombre_servidor0, puerto_servidor0):
-	"""
-	Maneja la conexion con el servidor. Lanzara error si no lo logra.
-	"""
+    """
+    Maneja la conexion con el servidor. Lanzara error si no lo logra.
+    """
     global lista_archivos
     global estado_conexion
     global inicio_descarga
@@ -45,9 +45,9 @@ def conexion_con_servidor(interfaz, nombre_servidor0, puerto_servidor0):
 
 
 def pedir_archivo(interfaz, mensaje):
-	"""
-	Se encarga de pedir un archivo y descargarlo.
-	"""
+    """
+    Se encarga de pedir un archivo y descargarlo.
+    """
     print('Pedi {}'.format(mensaje))
     cliente.sendto(mensaje.encode(),(nombre_servidor, puerto_servidor))
     print('Mensaje enviado')
@@ -94,9 +94,9 @@ def pedir_archivo(interfaz, mensaje):
         cliente.close()
 
 if __name__ == '__main__':
-	"""
-	Si se corre el programa, las interacciones son por consola.
-	"""
+    """
+    Si se corre el programa, las interacciones son por consola.
+    """
     print('inicio!')
     nombre_servidor = input('Digite IP del servidor (Azure: 52.234.215.61. Local: 127.0.0.1): ')
     puerto_servidor = int(input('Digite puerto del servidor (5005): '))
