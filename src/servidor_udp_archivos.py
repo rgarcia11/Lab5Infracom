@@ -79,7 +79,7 @@ def enviarObjetos():
 			socketCliente.sendto(pickle.dumps(dataEnv), addr)
 			print('Se envio 1 paquete')
 			try:
-				socketServidor.settimeout(5)
+				socketServidor.settimeout(2)
 				resp, addr = socketServidor.recvfrom(TAM_BUFFER)
 				if resp == b'ACK':
 					contador = contador + 1
