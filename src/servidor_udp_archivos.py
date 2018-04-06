@@ -76,7 +76,8 @@ def enviarObjetos():
 				condicionG = False
 		if condicionG:
 			#envia dataEnv con pickle al addr(puerto & ip)
-			socketCliente.sendto(pickle.dumps(dataEnv), addr)
+			#socketCliente.sendto(pickle.dumps(dataEnv), addr)
+			socketCliente.sendto(b'HOLAESUNAPRUEBA', addr)
 			print('Se envio 1 paquete')
 			try:
 				socketServidor.settimeout(2)
