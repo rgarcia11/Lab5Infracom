@@ -135,11 +135,17 @@ class Application(tk.Frame):
         Calcula cuando se debe terminar la sesion.
         """
         while 1:
-            time.sleep(5)
+            time.sleep(30)
             if not self.descargando:
                 self.mostrarConexion()
                 root.destroy()
                 return
+
+    def tiempoDescarga(self, stiempo):
+        win = tk.Toplevel()
+        win.wm_title("Tiempo transcurrido")
+        lbtiempo = tk.Label(win,text=stiempo)
+        lbtiempo.grid(row=0, column=0)
 
 if __name__ == '__main__':
     """

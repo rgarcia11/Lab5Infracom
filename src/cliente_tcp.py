@@ -86,9 +86,13 @@ def pedir_archivo(interfaz, mensaje):
         tiempo_transcurrido = str(cliente.recv(TAM_BUFFER).decode())
         tam_diferencia = tam_archivo - tam_actual
         if tam_diferencia == 0:
-            print('Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos))
+            stiempo = 'Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos)
+            print(stiempo)
+            interfaz.tiempoDescarga(stiempo)
         else:
-            print('Recibido archivo incompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos))
+            stiempo = 'Recibido archivo incompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos)
+            print(stiempo)
+            interfaz.tiempoDescarga(stiempo)
         inicio_descarga = 0
         interfaz.detenerDescarga()
         cliente.close()
