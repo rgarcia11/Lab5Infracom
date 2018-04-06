@@ -1,8 +1,6 @@
 """
 Cliente UDP
-
 Recibe archivos del servidor UDP que se especifica por consola.
-
 """
 
 import socket
@@ -92,7 +90,6 @@ def pedirArchivo(nombre_archivo):
 	except:
 		fallo = 1
 		print('El servidor no respondio.')
-
 	if not fallo:
 		try:
 			contador = 0
