@@ -39,35 +39,40 @@ def manejador_conexion(socket__conexion_servidor_cliente, nombre_cliente, puerto
     socket__conexion_servidor_cliente.sendto(str(lista_archivos).encode(), (nombre_cliente, puerto_cliente))
 
     #se recibe la peticion del archivo a enviar
-    peticion = socket__conexion_servidor_cliente.recv(TAM_BUFFER)
-    print ('Pidieron: {}'.format(peticion))
-    #si la peticion no existe, espera una peticion correcta del cliente
-    while not os.path.isfile(peticion):
-        print('No existe!')
-        socket__conexion_servidor_cliente.sendto('No existe'.encode(), (nombre_cliente, puerto_cliente))
+    peticion = ''
+    tiempo_inicio_conexion = time.time()
+    while peticion != b'TERMINADA':
         peticion = socket__conexion_servidor_cliente.recv(TAM_BUFFER)
+        print ('Pidieron: {}'.format(peticion))
+        #si la peticion no existe, espera una peticion correcta del cliente
+        while not os.path.isfile(peticion):
+            print('No existe!')
+            socket__conexion_servidor_cliente.sendto('No existe'.encode(), (nombre_cliente, puerto_cliente))
+            peticion = socket__conexion_servidor_cliente.recv(TAM_BUFFER)
 
-    #se debe enviar el tamanho del archivo antes
-    #con el tamanho el cliente puede ver progreso y transferir correctamente los archivos
-    tam_archivo = os.path.getsize(peticion)
-    print('El archivo pedido {} tiene tamanho {}'.format(peticion,tam_archivo))
-    socket__conexion_servidor_cliente.sendto(str(tam_archivo).encode(), (nombre_cliente, puerto_cliente))
-    #se abre el archivo que se quiere enviar, se lee en pedazos de tamanho TAM_BUFFER
-    tiempo_inicial = time.time()
-    with open(peticion, 'rb') as f:
-        archivo_enviar = f.read(TAM_BUFFER)
-        #este while envia el archivo pedazo a pedazo hasta que ya no se lee mas.
-        while archivo_enviar:
-            socket__conexion_servidor_cliente.send(archivo_enviar)
+        #se debe enviar el tamanho del archivo antes
+        #con el tamanho el cliente puede ver progreso y transferir correctamente los archivos
+        tam_archivo = os.path.getsize(peticion)
+        print('El archivo pedido {} tiene tamanho {}'.format(peticion,tam_archivo))
+        socket__conexion_servidor_cliente.sendto(str(tam_archivo).encode(), (nombre_cliente, puerto_cliente))
+        #se abre el archivo que se quiere enviar, se lee en pedazos de tamanho TAM_BUFFER
+        tiempo_inicial = time.time()
+        with open(peticion, 'rb') as f:
             archivo_enviar = f.read(TAM_BUFFER)
-    #se cierra el socket para escritura para prevenir errores raros
-    tiempo_final = float(socket__conexion_servidor_cliente.recv(TAM_BUFFER).decode())
-    tiempo_transcurrido = tiempo_final - tiempo_inicial
-    socket__conexion_servidor_cliente.sendto(str(tiempo_transcurrido).encode(), (nombre_cliente, puerto_cliente))
+            #este while envia el archivo pedazo a pedazo hasta que ya no se lee mas.
+            while archivo_enviar:
+                socket__conexion_servidor_cliente.send(archivo_enviar)
+                archivo_enviar = f.read(TAM_BUFFER)
+        #se cierra el socket para escritura para prevenir errores raros
+        tiempo_final = float(socket__conexion_servidor_cliente.recv(TAM_BUFFER).decode())
+        tiempo_transcurrido = tiempo_final - tiempo_inicial
+        print('Descarga finalizada con {}:{}. Tiempo transcurrido: {}'.format(nombre_cliente, puerto_cliente, tiempo_transcurrido))
+        socket__conexion_servidor_cliente.sendto(str(tiempo_transcurrido).encode(), (nombre_cliente, puerto_cliente))
     socket__conexion_servidor_cliente.shutdown(socket.SHUT_WR)
     #se cierra el socket ahora si
     socket__conexion_servidor_cliente.close()
-    print('Conexion cerrada con {}:{}. Tiempo transcurrido: {}'.format(nombre_cliente, puerto_cliente, tiempo_transcurrido))
+    tiempo_total =time.time() - tiempo_inicio_conexion
+    print('Conexion cerrada con {}:{}. Tiempo transcurrido: {}'.format(nombre_cliente, puerto_cliente, tiempo_total))
 
 #####Esta funcion es un thread para la recepcion de clientes.
 def manejador_clientes():

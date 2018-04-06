@@ -2,6 +2,7 @@ import tkinter as tk
 from cliente_tcp import *
 import threading
 import math
+import sys
 """
 Interfaz del cliente para manejar las interacciones del usuario.
 """
@@ -47,7 +48,7 @@ class Application(tk.Frame):
 
         self.sdetener = tk.StringVar()
         self.sdetener.set("-")
-        self.btdetener = tk.Button(self, textvariable=self.sdetener, command=self.detenerDescarga)
+        self.btdetener = tk.Button(self, textvariable=self.sdetener, command=self.cambiarDescarga)
         self.btdetener.grid(row = 2, column=4, sticky = tk.S)
 
         self.sconexion = tk.StringVar()
@@ -60,7 +61,7 @@ class Application(tk.Frame):
         self.lbporcentaje.grid(row = 3, column=1, columnspan=2, sticky=tk.W+tk.E)
 
         self.quit = tk.Button(self, text="QUIT", fg="red",
-                              command=root.destroy)
+                              command=self.terminar)
         self.quit.grid(row=4, column=2)
 
     def conectar(self):
@@ -69,7 +70,7 @@ class Application(tk.Frame):
         """
         conexion_con_servidor(self, self.txip.get(), int(self.txport.get()))
         self.mostrarConexion()
-        thread_timeout=threading.Thread(target=self.timeoutCliente)
+        thread_timeout=threading.Thread(target=timeoutCliente, args=(self,))
         thread_timeout.start()
 
     def actualizarLista(self, lista):
@@ -88,7 +89,7 @@ class Application(tk.Frame):
         seleccionado = self.listBoxLista.get(self.listBoxLista.curselection())
         thread_archivo=threading.Thread(target=pedir_archivo, args=(self,seleccionado,))
         thread_archivo.start()
-        self.detenerDescarga()
+        self.cambiarDescarga()
 
     def mostrarConexion(self):
         """
@@ -113,7 +114,7 @@ class Application(tk.Frame):
         """
         self.s.set('Progreso: {}%'.format(math.ceil(progreso)))
 
-    def detenerDescarga(self):
+    def cambiarDescarga(self):
         """
         Detiene la descarga cambiando el estado y mostrandolo.
         """
@@ -130,22 +131,22 @@ class Application(tk.Frame):
         """
         return self.descargando
 
-    def timeoutCliente(self):
-        """
-        Calcula cuando se debe terminar la sesion.
-        """
-        while 1:
-            time.sleep(30)
-            if not self.descargando:
-                self.mostrarConexion()
-                root.destroy()
-                return
-
-    def tiempoDescarga(self, stiempo):
+    def mensajeEmergente(self, mensaje):
         win = tk.Toplevel()
         win.wm_title("Tiempo transcurrido")
-        lbtiempo = tk.Label(win,text=stiempo)
+        lbtiempo = tk.Label(win,text=mensaje)
         lbtiempo.grid(row=0, column=0)
+        quit = tk.Button(win, text="Close", fg="red",
+                              command=win.destroy)
+        quit.grid(row=2, column=0)
+
+    def terminar(self):
+        cerrarConexion(self)
+        root.destroy()
+
+    def finalizarDescarga(self):
+        self.sdetener.set("-")
+        self.descargando=0
 
 if __name__ == '__main__':
     """
@@ -154,3 +155,4 @@ if __name__ == '__main__':
     root = tk.Tk()
     app = Application(master=root)
     app.mainloop()
+    threading.join(1)

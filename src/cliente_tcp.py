@@ -1,20 +1,29 @@
 import socket
 import threading
-import tkinter
 import time
 import os
 import interfaz_cliente_tcp
+import sys
 """
 Script de conexion con el servidor y transferencia de archivos
 """
 
 TAM_BUFFER = 5120
 lista_archivos = []
-estado_conexion = 0
-inicio_descarga = 0
 dir_src = os.getcwd()
 dir_descargas = os.path.join(dir_src[:-(len(os.sep)+len("src"))],"descargas")
 cliente = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+def cerrarConexion(interfaz):
+    """
+    Termina la conexion
+    """
+    try:
+        cliente.sendto(b'TERMINADA',(nombre_servidor, puerto_servidor))
+        cliente.shutdown(socket.SHUT_WR)
+        cliente.close()
+    except:
+        print('No hay conexion')
 
 def conexion_con_servidor(interfaz, nombre_servidor0, puerto_servidor0):
     """
@@ -32,12 +41,12 @@ def conexion_con_servidor(interfaz, nombre_servidor0, puerto_servidor0):
     print('Intentare conectarme a {}:{}'.format(nombre_servidor, puerto_servidor))
     cliente.connect((nombre_servidor, puerto_servidor))
     print('conectado')
-    estado_conexion = 1
 
     #Recibir e imprimir la lista de archivos
     lista_archivos = str(cliente.recv(TAM_BUFFER))
     if lista_archivos == b'Intente mas tarde':
-        cliente.close()
+        interfaz.mensajeEmergente('No se pudo establecer conexion.')
+        cerrarConexion(interfaz)
         return
 
     lista_archivos = lista_archivos[3:-2].split(", ")
@@ -59,7 +68,6 @@ def pedir_archivo(interfaz, mensaje):
         tam_actual = 0
         buff = b""
         print('Recibiendo:')
-        inicio_descarga = 1
         num_archivos = 0
         os.chdir(dir_descargas)
         with open(mensaje, 'wb') as f:
@@ -88,14 +96,25 @@ def pedir_archivo(interfaz, mensaje):
         if tam_diferencia == 0:
             stiempo = 'Recibido archivo completo. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos)
             print(stiempo)
-            interfaz.tiempoDescarga(stiempo)
+            interfaz.mensajeEmergente(stiempo)
         else:
             stiempo = 'Recibido archivo incompleto. Tiempo transcurrido: {}. Bytes esperados: {}. Bytes recibidos: {}. Paquetes recibidos: {}'.format(tiempo_transcurrido,tam_archivo,tam_actual,num_archivos)
             print(stiempo)
-            interfaz.tiempoDescarga(stiempo)
-        inicio_descarga = 0
-        interfaz.detenerDescarga()
-        cliente.close()
+            interfaz.mensajeEmergente(stiempo)
+        interfaz.finalizarDescarga()
+
+def timeoutCliente(interfaz):
+    """
+    Calcula cuando se debe terminar la sesion.
+    """
+    while 1:
+        time.sleep(30)
+        if not interfaz.descargando:
+            interfaz.mostrarConexion()
+            interfaz.terminar()
+            return
+
+
 
 if __name__ == '__main__':
     """
